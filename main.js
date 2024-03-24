@@ -20,14 +20,20 @@ const createElementNode = (type, props, ...children) => {
   };
 };
 
+const render = (container, vNode) => {
+  const el =
+    vNode.type === 'TEXT'
+      ? document.createTextNode(vNode)
+      : document.createElement(vNode.type);
+  const { children, ...props } = vNode.props;
+  Object.keys(props).map((key) => {
+    el[key] = props[key];
+  });
+  children.map((child) => render(el, child));
+  container.append(el);
+};
+
 const Text = createTextNode('app');
 const App = createElementNode('div', { id: 'app' }, Text);
 
-const app = document.createElement(App.type);
-app.id = App.props.id;
-
-const textNode = document.createTextNode('');
-textNode.textContent = Text.props.nodeValue;
-
-app.appendChild(textNode);
-root.appendChild(app);
+render(root, App);
